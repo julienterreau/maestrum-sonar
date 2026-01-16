@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌟 SONAR MAESTRUM - Ultra Premium Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Orbitron:wght@400;500;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --gold-primary: #FFD700;
+            --gold-dark: #B8860B;
+            --gold-light: #FFF8DC;
+            --bg-dark: #0a0a0f;
+            --bg-darker: #050508;
+        }
+        
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: var(--bg-dark);
+            color: var(--gold-light);
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Epic Animated Background */
+        .premium-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at top, rgba(255, 215, 0, 0.08) 0%, transparent 70%),
+                radial-gradient(ellipse at bottom, rgba(184, 134, 11, 0.08) 0%, transparent 70%),
+                radial-gradient(circle at center, transparent 0%, var(--bg-darker) 100%),
+                linear-gradient(180deg, #0a0a0f 0%, #1a1520 30%, #0f0f1a 70%, #0a0a0f 100%);
+            z-index: -2;
+            animation: bgPulse 8s ease-in-out infinite alternate;
+        }
+        
+        @keyframes bgPulse {
+            0% { opacity: 0.95; }
+            100% { opacity: 1; }
+        }
+        
+        /* Golden Particles Effect */
+        .gold-particles {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(2px);
+            animation: floatParticle 15s infinite;
+        }
+        
+        @keyframes floatParticle {
+            0%, 100% { 
+                transform: translateY(0) translateX(0) scale(1); 
+                opacity: 0.2; 
+            }
+            25% { 
+                transform: translateY(-120px) translateX(60px) scale(1.4); 
+                opacity: 0.7; 
+            }
+            50% { 
+                transform: translateY(-80px) translateX(-60px) scale(0.8); 
+                opacity: 0.4; 
+            }
+            75% { 
+                transform: translateY(-180px) translateX(120px) scale(1.2); 
+                opacity: 0.6; 
+            }
+        }
+        
+        /* Ultra Premium Glass Effect */
+        .gold-glass {
+            background: linear-gradient(135deg, 
+                rgba(255, 215, 0, 0.12) 0%,
+                rgba(184, 134, 11, 0.08) 25%,
+                rgba(255, 215, 0, 0.06) 50%,
+                rgba(184, 134, 11, 0.08) 75%,
+                rgba(255, 215, 0, 0.12) 100%);
+            backdrop-filter: blur(25px) saturate(180%);
+            border: 2px solid transparent;
+            border-image: linear-gradient(135deg, 
+                rgba(255, 215, 0, 0.5), 
+                rgba(184, 134, 11, 0.3),
+                rgba(255, 215, 0, 0.5)) 1;
+            box-shadow: 
+                0 12px 48px 0 rgba(255, 215, 0, 0.25),
+                inset 0 2px 8px rgba(255, 255, 255, 0.15),
+                0 0 60px rgba(255, 215, 0, 0.2),
+                0 0 120px rgba(184, 134, 11, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .gold-glass::before {
+            content: '';
+            position: absolute;
+            top: -150%;
+            left: -150%;
+            width: 400%;
+            height: 400%;
+            background: conic-gradient(
+                from 0deg,
+                transparent 0%,
+                rgba(255, 223, 0, 0.15) 25%,
+                transparent 50%,
+                rgba(255, 215, 0, 0.2) 75%,
+                transparent 100%
+            );
+            animation: shine 8s linear infinite;
+        }
+        
+        @keyframes shine {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Legendary Golden Button */
+        .gold-btn {
+            position: relative;
+            padding: 18px 48px;
+            font-family: 'Cinzel Decorative', serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--bg-darker);
+            background: linear-gradient(135deg, 
+                #FFD700 0%, 
+                #FFA500 25%,
+                #FFD700 50%,
+                #FFA500 75%,
+                #FFD700 100%);
+            background-size: 300% 300%;
+            border: 3px solid rgba(255, 255, 255, 0.4);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 
+                0 10px 40px rgba(255, 215, 0, 0.5),
+                inset 0 2px 8px rgba(255, 255, 255, 0.4),
+                0 0 60px rgba(255, 215, 0, 0.3);
+            overflow: hidden;
+            transform: translateZ(0);
+        }
+        
+        .gold-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(255, 255, 255, 0.8) 50%,
+                transparent 70%
+            );
+            transform: rotate(45deg);
+            animation: btnShine 3s infinite;
+        }
+        
+        @keyframes btnShine {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+        
+        .gold-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            background-position: 100% 50%;
+            box-shadow: 
+                0 20px 60px rgba(255, 215, 0, 0.7),
+                inset 0 2px 12px rgba(255, 255, 255, 0.6),
+                0 0 100px rgba(255, 215, 0, 0.5),
+                0 0 200px rgba(255, 165, 0, 0.3);
+            animation: btnPulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes btnPulse {
+            0%, 100% { 
+                box-shadow: 
+                    0 20px 60px rgba(255, 215, 0, 0.7),
+                    inset 0 2px 12px rgba(255, 255, 255, 0.6),
+                    0 0 100px rgba(255, 215, 0, 0.5); 
+            }
+            50% { 
+                box-shadow: 
+                    0 20px 80px rgba(255, 215, 0, 0.9),
+                    inset 0 2px 16px rgba(255, 255, 255, 0.8),
+                    0 0 140px rgba(255, 215, 0, 0.7); 
+            }
+        }
+        
+        .gold-btn:active {
+            transform: translateY(-2px) scale(1.02);
+        }
+        
+        /* Luxurious Title */
+        .maestrum-title {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, 
+                #FFD700 0%, 
+                #FFF8DC 25%,
+                #FFD700 50%,
+                #B8860B 75%,
+                #FFD700 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 
+                0 0 30px rgba(255, 215, 0, 0.5),
+                0 0 60px rgba(255, 215, 0, 0.3);
+            animation: titleShimmer 4s ease-in-out infinite;
+            letter-spacing: 8px;
+            position: relative;
+            filter: drop-shadow(0 8px 16px rgba(255, 215, 0, 0.4));
+        }
+        
+        @keyframes titleShimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        /* Epic Card */
+        .premium-card {
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .premium-card:hover {
+            transform: translateY(-15px) scale(1.03);
+            box-shadow: 
+                0 25px 80px rgba(255, 215, 0, 0.4),
+                0 0 100px rgba(255, 215, 0, 0.2);
+        }
+        
+        /* Glowing Input */
+        .gold-input {
+            background: rgba(10, 10, 15, 0.7);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            color: var(--gold-light);
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-family: 'Orbitron', sans-serif;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
+        
+        .gold-input:focus {
+            outline: none;
+            border-color: var(--gold-primary);
+            box-shadow: 
+                inset 0 2px 8px rgba(0, 0, 0, 0.5),
+                0 0 20px rgba(255, 215, 0, 0.4),
+                0 0 40px rgba(255, 215, 0, 0.2);
+        }
+        
+        /* Synth Card */
+        .synth-card {
+            background: linear-gradient(135deg, 
+                rgba(255, 215, 0, 0.08) 0%,
+                rgba(184, 134, 11, 0.05) 100%);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 215, 0, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .synth-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 215, 0, 0.2), 
+                transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .synth-card:hover::before {
+            left: 100%;
+        }
+        
+        .synth-card:hover {
+            transform: translateY(-8px) scale(1.05);
+            border-color: var(--gold-primary);
+            box-shadow: 
+                0 15px 50px rgba(255, 215, 0, 0.3),
+                0 0 60px rgba(255, 215, 0, 0.2);
+        }
+        
+        .synth-card.selected {
+            background: linear-gradient(135deg, 
+                rgba(255, 215, 0, 0.2) 0%,
+                rgba(184, 134, 11, 0.15) 100%);
+            border-color: var(--gold-primary);
+            box-shadow: 
+                0 10px 40px rgba(255, 215, 0, 0.4),
+                inset 0 0 30px rgba(255, 215, 0, 0.1);
+            transform: scale(1.05);
+        }
+        
+        /* Power Rating Stars */
+        .power-stars {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .power-star {
+            color: rgba(255, 215, 0, 0.3);
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+        
+        .power-star.active {
+            color: var(--gold-primary);
+            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.8));
+            animation: starPulse 1s ease-in-out infinite;
+        }
+        
+        @keyframes starPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        
+        /* Progress Bar */
+        .gold-progress-bar {
+            width: 100%;
+            height: 40px;
+            background: rgba(10, 10, 15, 0.8);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
+        
+        .gold-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, 
+                #FFD700 0%, 
+                #FFA500 50%,
+                #FFD700 100%);
+            background-size: 200% 100%;
+            border-radius: 18px;
+            transition: width 0.5s ease;
+            animation: progressShine 2s linear infinite;
+            box-shadow: 
+                0 0 20px rgba(255, 215, 0, 0.6),
+                inset 0 2px 4px rgba(255, 255, 255, 0.3);
+        }
+        
+        @keyframes progressShine {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+        
+        /* Upload Zone */
+        .upload-zone {
+            border: 3px dashed rgba(255, 215, 0, 0.3);
+            border-radius: 20px;
+            padding: 60px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            background: rgba(10, 10, 15, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .upload-zone::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, 
+                rgba(255, 215, 0, 0.1) 0%, 
+                transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        
+        .upload-zone:hover {
+            border-color: var(--gold-primary);
+            background: rgba(255, 215, 0, 0.05);
+            transform: scale(1.02);
+            box-shadow: 
+                0 10px 40px rgba(255, 215, 0, 0.2),
+                inset 0 0 60px rgba(255, 215, 0, 0.05);
+        }
+        
+        .upload-zone:hover::before {
+            opacity: 1;
+        }
+        
+        .upload-zone.dragover {
+            border-color: var(--gold-primary);
+            background: rgba(255, 215, 0, 0.1);
+            box-shadow: 
+                0 0 60px rgba(255, 215, 0, 0.4),
+                inset 0 0 40px rgba(255, 215, 0, 0.2);
+        }
+        
+        /* Stat Card */
+        .stat-card {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, 
+                rgba(255, 215, 0, 0.1) 0%,
+                rgba(184, 134, 11, 0.05) 100%);
+            border: 2px solid rgba(255, 215, 0, 0.2);
+            border-radius: 16px;
+            transition: all 0.4s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--gold-primary);
+            box-shadow: 0 15px 50px rgba(255, 215, 0, 0.3);
+        }
+        
+        .stat-value {
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-darker);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--gold-primary), var(--gold-dark));
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, var(--gold-light), var(--gold-primary));
+        }
+        
+        /* Genre Badge */
+        .genre-badge {
+            display: inline-block;
+            padding: 12px 28px;
+            background: linear-gradient(135deg, 
+                rgba(255, 215, 0, 0.15) 0%,
+                rgba(184, 134, 11, 0.1) 100%);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .genre-badge:hover {
+            background: linear-gradient(135deg, 
+                rgba(255, 215, 0, 0.25) 0%,
+                rgba(184, 134, 11, 0.2) 100%);
+            border-color: var(--gold-primary);
+            transform: scale(1.1);
+            box-shadow: 0 8px 30px rgba(255, 215, 0, 0.3);
+        }
+        
+        .genre-badge.active {
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            color: var(--bg-darker);
+            border-color: var(--gold-light);
+            box-shadow: 0 8px 30px rgba(255, 215, 0, 0.5);
+        }
+        
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            padding: 24px 36px;
+            background: linear-gradient(135deg, 
+                rgba(255, 215, 0, 0.95) 0%,
+                rgba(255, 165, 0, 0.95) 100%);
+            color: var(--bg-darker);
+            border-radius: 16px;
+            box-shadow: 
+                0 15px 50px rgba(255, 215, 0, 0.5),
+                0 0 60px rgba(255, 215, 0, 0.3);
+            font-weight: 700;
+            z-index: 1000;
+            animation: slideInRight 0.5s ease, glow 2s ease-in-out infinite;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes glow {
+            0%, 100% { 
+                box-shadow: 
+                    0 15px 50px rgba(255, 215, 0, 0.5),
+                    0 0 60px rgba(255, 215, 0, 0.3); 
+            }
+            50% { 
+                box-shadow: 
+                    0 15px 60px rgba(255, 215, 0, 0.7),
+                    0 0 80px rgba(255, 215, 0, 0.5); 
+            }
+        }
+        
+        /* Loading Spinner */
+        .gold-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255, 215, 0, 0.2);
+            border-top-color: var(--gold-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .maestrum-title {
+                font-size: 3rem;
+                letter-spacing: 4px;
+            }
+            
+            .gold-btn {
+                padding: 14px 32px;
+                font-size: 0.9rem;
+                letter-spacing: 2px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="premium-bg"></div>
+    
+    <!-- Gold Particles -->
+    <div class="gold-particles" id="particlesContainer"></div>
+    
+    <!-- Main Content -->
+    <div class="relative z-10 min-h-screen p-8">
+        <!-- Header -->
+        <header class="text-center mb-16">
+            <h1 class="maestrum-title mb-6 animate-pulse">
+                ✨ SONAR MAESTRUM ✨
+            </h1>
+            <p class="text-2xl font-light tracking-wider" style="color: var(--gold-light); text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);">
+                Ultra Premium AI Training Studio
+            </p>
+        </header>
+        
+        <!-- Stats Dashboard -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+            <div class="stat-card">
+                <i class="fas fa-music text-5xl mb-4" style="color: var(--gold-primary); filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6));"></i>
+                <div class="stat-value" id="totalFiles">0</div>
+                <p class="text-sm mt-2 uppercase tracking-wider" style="color: rgba(255, 248, 220, 0.7);">Fichiers Audio</p>
+            </div>
+            
+            <div class="stat-card">
+                <i class="fas fa-clock text-5xl mb-4" style="color: var(--gold-primary); filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6));"></i>
+                <div class="stat-value" id="totalDuration">0s</div>
+                <p class="text-sm mt-2 uppercase tracking-wider" style="color: rgba(255, 248, 220, 0.7);">Durée Totale</p>
+            </div>
+            
+            <div class="stat-card">
+                <i class="fas fa-database text-5xl mb-4" style="color: var(--gold-primary); filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6));"></i>
+                <div class="stat-value" id="totalSize">0 MB</div>
+                <p class="text-sm mt-2 uppercase tracking-wider" style="color: rgba(255, 248, 220, 0.7);">Taille Data</p>
+            </div>
+            
+            <div class="stat-card">
+                <i class="fas fa-guitar text-5xl mb-4" style="color: var(--gold-primary); filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6));"></i>
+                <div class="stat-value" id="selectedSynths">0</div>
+                <p class="text-sm mt-2 uppercase tracking-wider" style="color: rgba(255, 248, 220, 0.7);">Synthés Actifs</p>
+            </div>
+        </div>
+        
+        <!-- Upload Section -->
+        <div class="gold-glass rounded-3xl p-10 mb-12 premium-card">
+            <h2 class="text-3xl font-bold mb-8 text-center" style="color: var(--gold-primary); font-family: 'Cinzel Decorative', serif; letter-spacing: 3px;">
+                <i class="fas fa-cloud-upload-alt mr-3"></i>
+                Upload Audio Files
+            </h2>
+            
+            <div class="upload-zone" id="uploadZone">
+                <i class="fas fa-file-audio text-8xl mb-6" style="color: var(--gold-primary); filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.5));"></i>
+                <h3 class="text-2xl font-bold mb-4" style="color: var(--gold-light);">Glissez vos fichiers audio ici</h3>
+                <p class="text-lg mb-6" style="color: rgba(255, 248, 220, 0.7);">ou cliquez pour parcourir</p>
+                <p class="text-sm" style="color: rgba(255, 248, 220, 0.5);">Formats supportés : MP3, WAV, FLAC, OGG</p>
+                <input type="file" id="fileInput" multiple accept="audio/*" class="hidden">
+            </div>
+            
+            <div id="filesList" class="mt-8 space-y-4"></div>
+        </div>
+        
+        <!-- Genre Selection -->
+        <div class="gold-glass rounded-3xl p-10 mb-12 premium-card">
+            <h2 class="text-3xl font-bold mb-8 text-center" style="color: var(--gold-primary); font-family: 'Cinzel Decorative', serif; letter-spacing: 3px;">
+                <i class="fas fa-palette mr-3"></i>
+                Sélectionner un Genre
+            </h2>
+            
+            <div class="flex flex-wrap gap-4 justify-center" id="genreSelector">
+                <button class="genre-badge active" data-genre="jazz">
+                    <i class="fas fa-jazz mr-2"></i> Jazz
+                </button>
+                <button class="genre-badge" data-genre="electronic">
+                    <i class="fas fa-bolt mr-2"></i> Electronic
+                </button>
+                <button class="genre-badge" data-genre="classical">
+                    <i class="fas fa-music mr-2"></i> Classical
+                </button>
+                <button class="genre-badge" data-genre="rock">
+                    <i class="fas fa-guitar mr-2"></i> Rock
+                </button>
+                <button class="genre-badge" data-genre="hiphop">
+                    <i class="fas fa-microphone mr-2"></i> Hip-Hop
+                </button>
+                <button class="genre-badge" data-genre="ambient">
+                    <i class="fas fa-cloud mr-2"></i> Ambient
+                </button>
+                <button class="genre-badge" data-genre="pop">
+                    <i class="fas fa-star mr-2"></i> Pop
+                </button>
+                <button class="genre-badge" data-genre="metal">
+                    <i class="fas fa-fire mr-2"></i> Metal
+                </button>
+            </div>
+        </div>
+        
+        <!-- Synth Bank -->
+        <div class="gold-glass rounded-3xl p-10 mb-12 premium-card">
+            <h2 class="text-3xl font-bold mb-8 text-center" style="color: var(--gold-primary); font-family: 'Cinzel Decorative', serif; letter-spacing: 3px;">
+                <i class="fas fa-drum mr-3"></i>
+                Banque de Synthétiseurs
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="synthBank"></div>
+        </div>
+        
+        <!-- Training Config -->
+        <div class="gold-glass rounded-3xl p-10 mb-12 premium-card">
+            <h2 class="text-3xl font-bold mb-8 text-center" style="color: var(--gold-primary); font-family: 'Cinzel Decorative', serif; letter-spacing: 3px;">
+                <i class="fas fa-cog mr-3"></i>
+                Configuration d'Entraînement
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <label class="block text-lg font-semibold mb-4" style="color: var(--gold-light);">
+                        <i class="fas fa-brain mr-2"></i> Modèle de Base
+                    </label>
+                    <select id="baseModel" class="gold-input w-full">
+                        <option value="InspireMusic-1.5B-Long">InspireMusic 1.5B Long (Recommandé)</option>
+                        <option value="InspireMusic-1.5B">InspireMusic 1.5B</option>
+                        <option value="InspireMusic-Base">InspireMusic Base</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-lg font-semibold mb-4" style="color: var(--gold-light);">
+                        <i class="fas fa-redo mr-2"></i> Nombre d'Epochs : <span id="epochsValue">50</span>
+                    </label>
+                    <input type="range" id="epochs" min="10" max="200" value="50" class="w-full">
+                </div>
+                
+                <div>
+                    <label class="block text-lg font-semibold mb-4" style="color: var(--gold-light);">
+                        <i class="fas fa-layer-group mr-2"></i> Batch Size : <span id="batchValue">32</span>
+                    </label>
+                    <input type="range" id="batchSize" min="8" max="64" step="8" value="32" class="w-full">
+                </div>
+                
+                <div>
+                    <label class="block text-lg font-semibold mb-4" style="color: var(--gold-light);">
+                        <i class="fas fa-chart-line mr-2"></i> Learning Rate : <span id="lrValue">0.001</span>
+                    </label>
+                    <input type="range" id="learningRate" min="0.0001" max="0.01" step="0.0001" value="0.001" class="w-full">
+                </div>
+            </div>
+            
+            <div class="text-center mt-10">
+                <button id="startTraining" class="gold-btn">
+                    <i class="fas fa-rocket mr-3"></i>
+                    Lancer l'Entraînement
+                    <i class="fas fa-rocket ml-3"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Training Progress -->
+        <div id="trainingProgress" class="gold-glass rounded-3xl p-10 mb-12 premium-card hidden">
+            <h2 class="text-3xl font-bold mb-8 text-center" style="color: var(--gold-primary); font-family: 'Cinzel Decorative', serif; letter-spacing: 3px;">
+                <i class="fas fa-tasks mr-3"></i>
+                Progression de l'Entraînement
+            </h2>
+            
+            <div class="mb-8">
+                <div class="flex justify-between mb-4">
+                    <span class="text-lg font-semibold" style="color: var(--gold-light);">
+                        Epoch <span id="currentEpoch">0</span> / <span id="maxEpoch">50</span>
+                    </span>
+                    <span class="text-lg font-semibold" style="color: var(--gold-light);">
+                        <span id="progressPercent">0</span>%
+                    </span>
+                </div>
+                
+                <div class="gold-progress-bar">
+                    <div class="gold-progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+                
+                <div class="mt-4 text-center">
+                    <p class="text-lg" style="color: rgba(255, 248, 220, 0.8);">
+                        Temps estimé restant : <span id="timeRemaining" class="font-bold" style="color: var(--gold-primary);">Calcul...</span>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <canvas id="lossChart" height="200"></canvas>
+                </div>
+                
+                <div>
+                    <canvas id="accuracyChart" height="200"></canvas>
+                </div>
+            </div>
+            
+            <div class="text-center mt-8">
+                <button id="stopTraining" class="gold-btn bg-red-600 hover:bg-red-700">
+                    <i class="fas fa-stop mr-3"></i>
+                    Arrêter l'Entraînement
+                    <i class="fas fa-stop ml-3"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/static/premium-studio.js"></script>
+    <script>
+        // Generate gold particles
+        const particlesContainer = document.getElementById('particlesContainer');
+        for (let i = 0; i < 50; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.width = `${Math.random() * 10 + 5}px`;
+            particle.style.height = particle.style.width;
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.top = `${Math.random() * 100}%`;
+            particle.style.background = `radial-gradient(circle, rgba(${255}, ${215 - Math.random() * 40}, ${Math.random() * 50}, ${Math.random() * 0.5 + 0.3}), transparent)`;
+            particle.style.animationDelay = `${Math.random() * 10}s`;
+            particle.style.animationDuration = `${15 + Math.random() * 10}s`;
+            particlesContainer.appendChild(particle);
+        }
+    </script>
+</body>
+</html>

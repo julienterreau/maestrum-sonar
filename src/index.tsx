@@ -6,9 +6,8 @@ import { initializeDatabase } from './db-init'
 
 const app = new Hono<{ Bindings: Bindings }>()
 
-// Serve static files
-app.use('/static/*', serveStatic({ root: './public' }))
-app.use('/*.html', serveStatic({ root: './public' }))
+// Serve static files from public directory
+app.use('/static/*', serveStatic({ root: './' }))
 
 // Database initialization middleware
 let dbInitialized = false
@@ -375,6 +374,11 @@ app.get('/training', (c) => {
 </html>`)
 })
 
+// Premium Studio Route
+app.get('/premium', (c) => {
+  return c.redirect('/maestrum-premium.html')
+})
+
 // Main page
 app.get('/', (c) => {
   return c.html(`
@@ -408,10 +412,17 @@ app.get('/', (c) => {
         <div class="container mx-auto px-4 py-8 max-w-6xl">
             <!-- Header -->
             <div class="text-center mb-12">
-                <h1 class="text-5xl font-bold text-white mb-4">
-                    <i class="fas fa-music mr-3"></i>
-                    InspireMusic Generator
-                </h1>
+                <div class="flex justify-between items-center mb-4">
+                    <div></div>
+                    <h1 class="text-5xl font-bold text-white">
+                        <i class="fas fa-music mr-3"></i>
+                        InspireMusic Generator
+                    </h1>
+                    <a href="/premium" class="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black px-6 py-3 rounded-xl font-bold hover:scale-105 transition-transform shadow-lg hover:shadow-yellow-500/50">
+                        <i class="fas fa-crown mr-2"></i>
+                        PREMIUM
+                    </a>
+                </div>
                 <p class="text-xl text-white opacity-90">
                     Create amazing music with AI-powered generation
                 </p>

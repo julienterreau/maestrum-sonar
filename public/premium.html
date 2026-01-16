@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ Sonar Maestrum - Premium Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Orbitron:wght@400;500;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: #0a0a0f;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        
+        /* Animated Background */
+        .premium-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(184, 134, 11, 0.1) 0%, transparent 50%),
+                linear-gradient(180deg, #0a0a0f 0%, #1a1a2e 50%, #0a0a0f 100%);
+            z-index: -1;
+        }
+        
+        .gold-particles {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        .particle {
+            position: absolute;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.8), transparent);
+            border-radius: 50%;
+            animation: float 20s infinite ease-in-out;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0) scale(1); opacity: 0.3; }
+            25% { transform: translateY(-100px) translateX(50px) scale(1.2); opacity: 0.6; }
+            50% { transform: translateY(-50px) translateX(-50px) scale(0.8); opacity: 0.4; }
+            75% { transform: translateY(-150px) translateX(100px) scale(1.1); opacity: 0.5; }
+        }
+        
+        /* Golden Glass Effect */
+        .gold-glass {
+            background: linear-gradient(135deg, 
+                rgba(212, 175, 55, 0.15) 0%,
+                rgba(184, 134, 11, 0.1) 50%,
+                rgba(212, 175, 55, 0.15) 100%);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 
+                0 8px 32px 0 rgba(212, 175, 55, 0.2),
+                inset 0 2px 4px rgba(255, 255, 255, 0.1),
+                0 0 40px rgba(212, 175, 55, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .gold-glass::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(255, 223, 0, 0.1) 50%,
+                transparent 70%
+            );
+            animation: shine 6s infinite;
+        }
+        
+        @keyframes shine {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Premium Button */
+        .gold-btn {
+            background: linear-gradient(135deg, #d4af37 0%, #b8860b 50%, #d4af37 100%);
+            border: none;
+            color: #1a1a2e;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 4px 15px rgba(212, 175, 55, 0.4),
+                inset 0 2px 4px rgba(255, 255, 255, 0.3),
+                inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .gold-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.5s;
+        }
+        
+        .gold-btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 
+                0 6px 25px rgba(212, 175, 55, 0.6),
+                inset 0 2px 4px rgba(255, 255, 255, 0.4),
+                inset 0 -2px 4px rgba(0, 0, 0, 0.3),
+                0 0 30px rgba(212, 175, 55, 0.3);
+        }
+        
+        .gold-btn:hover::before {
+            left: 100%;
+        }
+        
+        .gold-btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+        
+        /* Glowing Text */
+        .gold-text {
+            background: linear-gradient(135deg, #ffd700 0%, #d4af37 25%, #b8860b 50%, #d4af37 75%, #ffd700 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gold-shimmer 3s linear infinite;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+        
+        @keyframes gold-shimmer {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+        
+        /* Logo Glow */
+        .logo-glow {
+            filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.8))
+                    drop-shadow(0 0 40px rgba(212, 175, 55, 0.4));
+            animation: pulse-glow 3s ease-in-out infinite;
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { 
+                filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.8))
+                        drop-shadow(0 0 40px rgba(212, 175, 55, 0.4));
+            }
+            50% { 
+                filter: drop-shadow(0 0 30px rgba(212, 175, 55, 1))
+                        drop-shadow(0 0 60px rgba(212, 175, 55, 0.6));
+            }
+        }
+        
+        /* Premium Input */
+        .gold-input {
+            background: rgba(10, 10, 15, 0.8);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            color: #ffd700;
+            padding: 16px 20px;
+            border-radius: 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
+        
+        .gold-input:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 
+                inset 0 2px 8px rgba(0, 0, 0, 0.5),
+                0 0 20px rgba(212, 175, 55, 0.4);
+        }
+        
+        .gold-input::placeholder {
+            color: rgba(212, 175, 55, 0.5);
+        }
+        
+        /* Drop Zone Premium */
+        .premium-dropzone {
+            border: 3px dashed rgba(212, 175, 55, 0.4);
+            background: linear-gradient(135deg,
+                rgba(212, 175, 55, 0.05) 0%,
+                rgba(184, 134, 11, 0.02) 50%,
+                rgba(212, 175, 55, 0.05) 100%);
+            transition: all 0.4s ease;
+            position: relative;
+        }
+        
+        .premium-dropzone::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 3px;
+            background: linear-gradient(45deg, #d4af37, #b8860b, #d4af37);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        
+        .premium-dropzone.drag-over {
+            border-color: #d4af37;
+            background: linear-gradient(135deg,
+                rgba(212, 175, 55, 0.15) 0%,
+                rgba(184, 134, 11, 0.1) 50%,
+                rgba(212, 175, 55, 0.15) 100%);
+            transform: scale(1.02);
+            box-shadow: 
+                0 0 40px rgba(212, 175, 55, 0.3),
+                inset 0 0 20px rgba(212, 175, 55, 0.1);
+        }
+        
+        .premium-dropzone.drag-over::before {
+            opacity: 1;
+        }
+        
+        /* Synth Card Premium */
+        .synth-card-premium {
+            background: linear-gradient(135deg,
+                rgba(212, 175, 55, 0.12) 0%,
+                rgba(26, 26, 46, 0.9) 50%,
+                rgba(212, 175, 55, 0.12) 100%);
+            border: 2px solid rgba(212, 175, 55, 0.25);
+            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .synth-card-premium::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.15) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        
+        .synth-card-premium:hover {
+            transform: translateY(-8px) scale(1.03);
+            border-color: #d4af37;
+            box-shadow: 
+                0 12px 40px rgba(212, 175, 55, 0.4),
+                inset 0 2px 8px rgba(255, 215, 0, 0.2);
+        }
+        
+        .synth-card-premium:hover::after {
+            opacity: 1;
+        }
+        
+        .synth-card-premium.selected {
+            border: 3px solid #d4af37;
+            background: linear-gradient(135deg,
+                rgba(212, 175, 55, 0.25) 0%,
+                rgba(184, 134, 11, 0.2) 50%,
+                rgba(212, 175, 55, 0.25) 100%);
+            box-shadow: 
+                0 0 30px rgba(212, 175, 55, 0.5),
+                inset 0 0 20px rgba(255, 215, 0, 0.15);
+        }
+        
+        /* Power Stars */
+        .power-star {
+            color: #ffd700;
+            filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.8));
+            animation: twinkle 2s ease-in-out infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Progress Bar Premium */
+        .progress-premium {
+            background: rgba(10, 10, 15, 0.8);
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-bar-premium {
+            background: linear-gradient(90deg,
+                #ffd700 0%,
+                #d4af37 25%,
+                #b8860b 50%,
+                #d4af37 75%,
+                #ffd700 100%);
+            background-size: 200% 100%;
+            height: 100%;
+            border-radius: 18px;
+            box-shadow: 
+                0 0 20px rgba(212, 175, 55, 0.6),
+                inset 0 2px 4px rgba(255, 255, 255, 0.3);
+            animation: progress-shine 2s linear infinite;
+            position: relative;
+        }
+        
+        .progress-bar-premium::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+            animation: progress-gleam 2s infinite;
+        }
+        
+        @keyframes progress-shine {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+        
+        @keyframes progress-gleam {
+            0% { left: -100%; }
+            100% { left: 200%; }
+        }
+        
+        /* Stat Card */
+        .stat-card {
+            background: linear-gradient(135deg,
+                rgba(212, 175, 55, 0.1) 0%,
+                rgba(26, 26, 46, 0.95) 50%,
+                rgba(212, 175, 55, 0.1) 100%);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffd700, #d4af37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.5));
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(10, 10, 15, 0.5);
+            border-left: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #d4af37, #b8860b);
+            border-radius: 6px;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #ffd700, #d4af37);
+        }
+        
+        /* Title Effects */
+        .title-premium {
+            font-family: 'Cinzel', serif;
+            font-size: 64px;
+            font-weight: 900;
+            text-align: center;
+            position: relative;
+            padding-bottom: 20px;
+        }
+        
+        .title-premium::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #d4af37, transparent);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <!-- Background -->
+    <div class="premium-bg"></div>
+    
+    <!-- Gold Particles -->
+    <div class="gold-particles" id="particles"></div>
+    
+    <div class="container mx-auto px-4 py-8 relative z-10">
+        <!-- Header with Logo -->
+        <div class="text-center mb-12">
+            <img src="https://www.genspark.ai/api/files/s/m21RpuvK" 
+                 alt="Sonar Maestrum" 
+                 class="logo-glow mx-auto mb-6" 
+                 style="max-width: 200px; height: auto;">
+            
+            <h1 class="title-premium gold-text mb-4">
+                SONAR MAESTRUM
+            </h1>
+            <p class="text-xl" style="color: rgba(212, 175, 55, 0.8); font-weight: 500; letter-spacing: 3px;">
+                PREMIUM AI MUSIC TRAINING STUDIO
+            </p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column -->
+            <div class="lg:col-span-2 space-y-8">
+                <!-- Upload Zone -->
+                <div class="gold-glass rounded-3xl p-8">
+                    <h2 class="text-3xl font-bold gold-text mb-6">
+                        <i class="fas fa-cloud-upload-alt mr-3"></i>
+                        UPLOAD AUDIO FILES
+                    </h2>
+                    
+                    <div id="dropZone" class="premium-dropzone rounded-2xl p-16 text-center">
+                        <i class="fas fa-file-audio text-7xl mb-6" style="color: #d4af37;"></i>
+                        <p class="text-2xl font-bold mb-4" style="color: #d4af37;">Drop Your Audio Files Here</p>
+                        <p class="text-sm mb-6" style="color: rgba(212, 175, 55, 0.6);">or</p>
+                        <label class="gold-btn py-4 px-8 rounded-xl cursor-pointer inline-block text-lg">
+                            <i class="fas fa-folder-open mr-2"></i>
+                            BROWSE FILES
+                            <input type="file" id="fileInput" multiple accept="audio/*" class="hidden">
+                        </label>
+                        <p class="text-xs mt-6" style="color: rgba(212, 175, 55, 0.5);">
+                            MP3, WAV, FLAC, OGG • Max 100MB per file
+                        </p>
+                    </div>
+
+                    <div id="filesList" class="mt-6 space-y-3"></div>
+                    
+                    <div class="mt-6">
+                        <label class="block text-sm font-bold mb-3" style="color: #d4af37; letter-spacing: 2px;">
+                            <i class="fas fa-tag mr-2"></i>DATASET NAME
+                        </label>
+                        <input 
+                            type="text" 
+                            id="datasetName" 
+                            placeholder="My Epic Music Collection 2024"
+                            class="gold-input w-full"
+                        >
+                    </div>
+
+                    <div class="mt-6">
+                        <label class="block text-sm font-bold mb-3" style="color: #d4af37; letter-spacing: 2px;">
+                            <i class="fas fa-music mr-2"></i>GENRE
+                        </label>
+                        <select id="genre" class="gold-input w-full">
+                            <option value="jazz">Jazz</option>
+                            <option value="electronic">Electronic / EDM</option>
+                            <option value="classical">Classical</option>
+                            <option value="rock">Rock</option>
+                            <option value="hiphop">Hip-Hop</option>
+                            <option value="ambient">Ambient</option>
+                            <option value="pop">Pop</option>
+                            <option value="metal">Metal</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Training Config -->
+                <div class="gold-glass rounded-3xl p-8">
+                    <h2 class="text-3xl font-bold gold-text mb-6">
+                        <i class="fas fa-sliders-h mr-3"></i>
+                        TRAINING CONFIGURATION
+                    </h2>
+
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-bold mb-3" style="color: #d4af37; letter-spacing: 2px;">
+                                <i class="fas fa-robot mr-2"></i>BASE MODEL
+                            </label>
+                            <select id="baseModel" class="gold-input w-full">
+                                <option value="InspireMusic-Base">InspireMusic Base (Fast)</option>
+                                <option value="InspireMusic-1.5B" selected>InspireMusic 1.5B (Recommended)</option>
+                                <option value="InspireMusic-1.5B-Long">InspireMusic 1.5B Long (Max Quality)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold mb-3" style="color: #d4af37; letter-spacing: 2px;">
+                                <i class="fas fa-sync mr-2"></i>EPOCHS: <span id="epochsValue" class="gold-text">50</span>
+                            </label>
+                            <input 
+                                type="range" 
+                                id="epochs" 
+                                min="10" 
+                                max="200" 
+                                value="50" 
+                                step="10"
+                                class="w-full h-3 rounded-lg appearance-none cursor-pointer"
+                                style="background: linear-gradient(90deg, rgba(212, 175, 55, 0.3), rgba(212, 175, 55, 0.6));"
+                                oninput="document.getElementById('epochsValue').textContent = this.value"
+                            >
+                        </div>
+
+                        <button 
+                            id="startTrainingBtn"
+                            class="gold-btn w-full py-6 rounded-xl text-xl mt-8"
+                        >
+                            <i class="fas fa-play mr-3"></i>
+                            START TRAINING
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="space-y-8">
+                <!-- Synth Bank -->
+                <div class="gold-glass rounded-3xl p-6">
+                    <h2 class="text-2xl font-bold gold-text mb-4">
+                        <i class="fas fa-keyboard mr-2"></i>
+                        SYNTH BANK
+                    </h2>
+                    <p class="text-xs mb-4" style="color: rgba(212, 175, 55, 0.7);">
+                        Select premium synthesizers
+                    </p>
+                    <div id="synthBank" class="space-y-3 max-h-[500px] overflow-y-auto"></div>
+                </div>
+
+                <!-- Stats -->
+                <div class="gold-glass rounded-3xl p-6">
+                    <h2 class="text-2xl font-bold gold-text mb-6">
+                        <i class="fas fa-chart-bar mr-2"></i>
+                        STATISTICS
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <div class="stat-card">
+                            <div class="text-xs mb-1" style="color: rgba(212, 175, 55, 0.7);">FILES</div>
+                            <div class="stat-value" id="filesCount">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="text-xs mb-1" style="color: rgba(212, 175, 55, 0.7);">DURATION</div>
+                            <div class="stat-value" id="totalDuration">0:00</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="text-xs mb-1" style="color: rgba(212, 175, 55, 0.7);">SIZE</div>
+                            <div class="stat-value" id="totalSize">0 MB</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="text-xs mb-1" style="color: rgba(212, 175, 55, 0.7);">SYNTHS</div>
+                            <div class="stat-value" id="synthsCount">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Training Progress (Hidden by default) -->
+        <div id="trainingProgress" class="gold-glass rounded-3xl p-8 mt-8 hidden">
+            <h2 class="text-3xl font-bold gold-text mb-6">
+                <i class="fas fa-chart-line mr-3"></i>
+                TRAINING IN PROGRESS
+            </h2>
+
+            <div class="grid grid-cols-2 gap-6 mb-6">
+                <div class="stat-card">
+                    <div class="text-xs mb-2" style="color: rgba(212, 175, 55, 0.7);">EPOCH</div>
+                    <div class="stat-value">
+                        <span id="currentEpoch">0</span> / <span id="totalEpochs">50</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-xs mb-2" style="color: rgba(212, 175, 55, 0.7);">TIME LEFT</div>
+                    <div class="stat-value" id="timeRemaining">--:--</div>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <div class="flex justify-between mb-3">
+                    <span style="color: #d4af37; font-weight: 600;">PROGRESS</span>
+                    <span id="progressPercent" style="color: #d4af37; font-weight: 600;">0%</span>
+                </div>
+                <div class="progress-premium h-8">
+                    <div id="progressBar" class="progress-bar-premium" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <button 
+                id="stopTrainingBtn"
+                class="gold-btn w-full py-4 rounded-xl"
+                style="background: linear-gradient(135deg, #8b0000 0%, #dc143c 50%, #8b0000 100%);"
+            >
+                <i class="fas fa-stop mr-2"></i>
+                STOP TRAINING
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Create floating particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.width = `${Math.random() * 4 + 2}px`;
+                particle.style.height = particle.style.width;
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                particle.style.animationDelay = `${Math.random() * 20}s`;
+                particle.style.animationDuration = `${Math.random() * 10 + 15}s`;
+                container.appendChild(particle);
+            }
+        }
+        
+        createParticles();
+    </script>
+    <script src="/static/training-studio.js"></script>
+</body>
+</html>
