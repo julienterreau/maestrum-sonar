@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎵 Sonar Maestrum - Training Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .gradient-bg {
+            background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #4facfe);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .drop-zone {
+            border: 3px dashed rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+        .drop-zone.drag-over {
+            border-color: #4facfe;
+            background: rgba(79, 172, 254, 0.1);
+            transform: scale(1.02);
+        }
+        .synth-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .synth-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(79, 172, 254, 0.3);
+        }
+        .synth-card.selected {
+            border: 2px solid #4facfe;
+            background: rgba(79, 172, 254, 0.2);
+        }
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-5xl font-bold text-white mb-4">
+                <i class="fas fa-brain mr-3"></i>
+                Sonar Maestrum Training Studio
+            </h1>
+            <p class="text-xl text-white opacity-90">
+                Entraînez votre propre modèle IA musical avec des instruments de synthèse professionnels
+            </p>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column - Upload & Config -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Upload Zone -->
+                <div class="glass rounded-2xl p-8 shadow-2xl">
+                    <h2 class="text-2xl font-bold text-white mb-6">
+                        <i class="fas fa-cloud-upload-alt mr-2"></i>
+                        1. Upload de Fichiers Audio
+                    </h2>
+                    
+                    <!-- Drop Zone -->
+                    <div id="dropZone" class="drop-zone rounded-xl p-12 text-center mb-6">
+                        <i class="fas fa-file-audio text-6xl text-white opacity-70 mb-4"></i>
+                        <p class="text-white text-xl mb-2">Glissez vos fichiers audio ici</p>
+                        <p class="text-white opacity-70 mb-4">ou</p>
+                        <label class="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-6 rounded-lg cursor-pointer inline-block transition-all">
+                            <i class="fas fa-folder-open mr-2"></i>
+                            Parcourir les fichiers
+                            <input type="file" id="fileInput" multiple accept="audio/*" class="hidden">
+                        </label>
+                        <p class="text-white opacity-70 text-sm mt-4">
+                            Formats supportés: MP3, WAV, FLAC, OGG (Max 100MB par fichier)
+                        </p>
+                    </div>
+
+                    <!-- Uploaded Files List -->
+                    <div id="filesList" class="space-y-2"></div>
+                    
+                    <!-- Dataset Name -->
+                    <div class="mt-6">
+                        <label class="block text-white font-semibold mb-2">
+                            <i class="fas fa-tag mr-2"></i>
+                            Nom du Dataset
+                        </label>
+                        <input 
+                            type="text" 
+                            id="datasetName" 
+                            placeholder="Ex: Ma Collection Jazz 2024"
+                            class="w-full px-4 py-3 rounded-lg bg-white bg-opacity-20 text-white placeholder-gray-300 border border-white border-opacity-30 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                        >
+                    </div>
+
+                    <!-- Genre Selection -->
+                    <div class="mt-6">
+                        <label class="block text-white font-semibold mb-2">
+                            <i class="fas fa-music mr-2"></i>
+                            Genre Musical
+                        </label>
+                        <select 
+                            id="genre" 
+                            class="w-full px-4 py-3 rounded-lg bg-white bg-opacity-20 text-white border border-white border-opacity-30 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                        >
+                            <option value="jazz">Jazz</option>
+                            <option value="electronic">Electronic / EDM</option>
+                            <option value="classical">Classical</option>
+                            <option value="rock">Rock</option>
+                            <option value="hiphop">Hip-Hop</option>
+                            <option value="ambient">Ambient</option>
+                            <option value="pop">Pop</option>
+                            <option value="metal">Metal</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Training Configuration -->
+                <div class="glass rounded-2xl p-8 shadow-2xl">
+                    <h2 class="text-2xl font-bold text-white mb-6">
+                        <i class="fas fa-sliders-h mr-2"></i>
+                        3. Configuration d'Entraînement
+                    </h2>
+
+                    <!-- Base Model -->
+                    <div class="mb-6">
+                        <label class="block text-white font-semibold mb-2">
+                            <i class="fas fa-robot mr-2"></i>
+                            Modèle de Base
+                        </label>
+                        <select 
+                            id="baseModel" 
+                            class="w-full px-4 py-3 rounded-lg bg-white bg-opacity-20 text-white border border-white border-opacity-30 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                        >
+                            <option value="InspireMusic-Base">InspireMusic Base (Rapide)</option>
+                            <option value="InspireMusic-1.5B" selected>InspireMusic 1.5B (Recommandé)</option>
+                            <option value="InspireMusic-1.5B-Long">InspireMusic 1.5B Long (Qualité max)</option>
+                        </select>
+                    </div>
+
+                    <!-- Epochs -->
+                    <div class="mb-6">
+                        <label class="block text-white font-semibold mb-2">
+                            <i class="fas fa-sync mr-2"></i>
+                            Nombre d'Epochs: <span id="epochsValue">50</span>
+                        </label>
+                        <input 
+                            type="range" 
+                            id="epochs" 
+                            min="10" 
+                            max="200" 
+                            value="50" 
+                            step="10"
+                            class="w-full h-2 bg-white bg-opacity-20 rounded-lg appearance-none cursor-pointer"
+                            oninput="document.getElementById('epochsValue').textContent = this.value"
+                        >
+                        <p class="text-white opacity-70 text-sm mt-2">Plus d'epochs = meilleure qualité mais plus long</p>
+                    </div>
+
+                    <!-- Batch Size -->
+                    <div class="mb-6">
+                        <label class="block text-white font-semibold mb-2">
+                            <i class="fas fa-layer-group mr-2"></i>
+                            Batch Size: <span id="batchValue">16</span>
+                        </label>
+                        <input 
+                            type="range" 
+                            id="batchSize" 
+                            min="8" 
+                            max="64" 
+                            value="16" 
+                            step="8"
+                            class="w-full h-2 bg-white bg-opacity-20 rounded-lg appearance-none cursor-pointer"
+                            oninput="document.getElementById('batchValue').textContent = this.value"
+                        >
+                    </div>
+
+                    <!-- Learning Rate -->
+                    <div class="mb-6">
+                        <label class="block text-white font-semibold mb-2">
+                            <i class="fas fa-tachometer-alt mr-2"></i>
+                            Learning Rate
+                        </label>
+                        <select 
+                            id="learningRate" 
+                            class="w-full px-4 py-3 rounded-lg bg-white bg-opacity-20 text-white border border-white border-opacity-30 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                        >
+                            <option value="0.0001">0.0001 (Lent et stable)</option>
+                            <option value="0.001" selected>0.001 (Recommandé)</option>
+                            <option value="0.01">0.01 (Rapide mais risqué)</option>
+                        </select>
+                    </div>
+
+                    <!-- Start Training Button -->
+                    <button 
+                        id="startTrainingBtn"
+                        class="w-full bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-bold py-4 px-6 rounded-lg transition-all transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <i class="fas fa-play mr-2"></i>
+                        Lancer l'Entraînement
+                    </button>
+                </div>
+
+                <!-- Training Progress (Hidden by default) -->
+                <div id="trainingProgress" class="glass rounded-2xl p-8 shadow-2xl hidden">
+                    <h2 class="text-2xl font-bold text-white mb-6">
+                        <i class="fas fa-chart-line mr-2"></i>
+                        Progression de l'Entraînement
+                    </h2>
+
+                    <!-- Progress Info -->
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="glass rounded-lg p-4">
+                            <p class="text-white opacity-70 text-sm">Epoch</p>
+                            <p class="text-white text-2xl font-bold"><span id="currentEpoch">0</span> / <span id="totalEpochs">50</span></p>
+                        </div>
+                        <div class="glass rounded-lg p-4">
+                            <p class="text-white opacity-70 text-sm">Temps restant</p>
+                            <p class="text-white text-2xl font-bold" id="timeRemaining">--:--</p>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="mb-6">
+                        <div class="flex justify-between text-white text-sm mb-2">
+                            <span>Progression</span>
+                            <span id="progressPercent">0%</span>
+                        </div>
+                        <div class="w-full bg-white bg-opacity-20 rounded-full h-4">
+                            <div id="progressBar" class="bg-gradient-to-r from-green-400 to-blue-500 h-4 rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Loss Chart -->
+                    <canvas id="lossChart" class="w-full" height="200"></canvas>
+
+                    <!-- Stop Button -->
+                    <button 
+                        id="stopTrainingBtn"
+                        class="w-full bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white font-bold py-3 px-6 rounded-lg transition-all mt-6"
+                    >
+                        <i class="fas fa-stop mr-2"></i>
+                        Arrêter l'Entraînement
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Column - Synth Bank -->
+            <div class="space-y-6">
+                <!-- Synth Bank -->
+                <div class="glass rounded-2xl p-8 shadow-2xl">
+                    <h2 class="text-2xl font-bold text-white mb-6">
+                        <i class="fas fa-keyboard mr-2"></i>
+                        2. Banque de Synthés
+                    </h2>
+                    <p class="text-white opacity-90 mb-4 text-sm">
+                        Sélectionnez les instruments de synthèse à utiliser pour l'entraînement
+                    </p>
+
+                    <div id="synthBank" class="space-y-3">
+                        <!-- Synths will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Training Stats -->
+                <div class="glass rounded-2xl p-8 shadow-2xl">
+                    <h2 class="text-2xl font-bold text-white mb-6">
+                        <i class="fas fa-chart-bar mr-2"></i>
+                        Statistiques
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-white opacity-70">Fichiers uploadés</span>
+                            <span class="text-white font-bold text-xl" id="filesCount">0</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-white opacity-70">Durée totale</span>
+                            <span class="text-white font-bold text-xl" id="totalDuration">0:00</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-white opacity-70">Taille totale</span>
+                            <span class="text-white font-bold text-xl" id="totalSize">0 MB</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-white opacity-70">Synthés sélectionnés</span>
+                            <span class="text-white font-bold text-xl" id="synthsCount">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/training-studio.js"></script>
+</body>
+</html>

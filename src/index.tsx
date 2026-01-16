@@ -1,9 +1,14 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
+import { serveStatic } from 'hono/cloudflare-workers'
 import type { Bindings, Generation, GenerateRequest } from './types'
 import { initializeDatabase } from './db-init'
 
 const app = new Hono<{ Bindings: Bindings }>()
+
+// Serve static files
+app.use('/static/*', serveStatic({ root: './public' }))
+app.use('/*.html', serveStatic({ root: './public' }))
 
 // Database initialization middleware
 let dbInitialized = false
@@ -201,6 +206,173 @@ app.get('/api/status', async (c) => {
     console.error('Error fetching status:', error)
     return c.json({ error: 'Failed to fetch status', status: 'error' }, 500)
   }
+})
+
+// Training Studio API Routes
+
+// Upload audio files for training
+app.post('/api/training/upload', async (c) => {
+  const { DB, R2 } = c.env
+  
+  try {
+    const formData = await c.req.formData()
+    const datasetName = formData.get('dataset_name') as string
+    const genre = formData.get('genre') as string
+    const files = formData.getAll('files')
+    
+    if (!datasetName || !genre) {
+      return c.json({ error: 'Dataset name and genre are required' }, 400)
+    }
+    
+    // Create dataset
+    const datasetResult = await DB.prepare(`
+      INSERT INTO training_datasets (name, genre, total_files, status)
+      VALUES (?, ?, ?, 'uploading')
+    `).bind(datasetName, genre, files.length).run()
+    
+    const datasetId = datasetResult.meta.last_row_id
+    
+    // In production, files would be uploaded to R2
+    // For now, just track metadata
+    
+    return c.json({
+      dataset_id: datasetId,
+      files_count: files.length,
+      message: 'Dataset created successfully'
+    })
+  } catch (error) {
+    console.error('Error uploading files:', error)
+    return c.json({ error: 'Failed to upload files' }, 500)
+  }
+})
+
+// Start training
+app.post('/api/training/start', async (c) => {
+  const { DB } = c.env
+  
+  try {
+    const body = await c.req.json()
+    const { 
+      dataset_id, 
+      base_model, 
+      epochs = 50, 
+      batch_size = 16, 
+      learning_rate = 0.001,
+      synths = []
+    } = body
+    
+    if (!dataset_id || !base_model) {
+      return c.json({ error: 'Dataset ID and base model are required' }, 400)
+    }
+    
+    // Create training job
+    const config = JSON.stringify({
+      epochs,
+      batch_size,
+      learning_rate,
+      synths
+    })
+    
+    const result = await DB.prepare(`
+      INSERT INTO fine_tuned_models (
+        name, 
+        base_model, 
+        dataset_id, 
+        training_config, 
+        status, 
+        total_epochs
+      )
+      VALUES (?, ?, ?, ?, 'queued', ?)
+    `).bind(
+      `Model-${Date.now()}`,
+      base_model,
+      dataset_id,
+      config,
+      epochs
+    ).run()
+    
+    const modelId = result.meta.last_row_id
+    
+    // In production, this would trigger actual training
+    return c.json({
+      model_id: modelId,
+      status: 'queued',
+      message: 'Training job created successfully'
+    })
+  } catch (error) {
+    console.error('Error starting training:', error)
+    return c.json({ error: 'Failed to start training' }, 500)
+  }
+})
+
+// Get training progress
+app.get('/api/training/progress/:id', async (c) => {
+  const { DB } = c.env
+  const modelId = c.req.param('id')
+  
+  try {
+    const model = await DB.prepare(`
+      SELECT * FROM fine_tuned_models WHERE id = ?
+    `).bind(modelId).first()
+    
+    if (!model) {
+      return c.json({ error: 'Model not found' }, 404)
+    }
+    
+    // Get recent logs
+    const { results: logs } = await DB.prepare(`
+      SELECT * FROM training_logs 
+      WHERE model_id = ? 
+      ORDER BY created_at DESC 
+      LIMIT 10
+    `).bind(modelId).all()
+    
+    return c.json({
+      model,
+      recent_logs: logs
+    })
+  } catch (error) {
+    console.error('Error fetching progress:', error)
+    return c.json({ error: 'Failed to fetch progress' }, 500)
+  }
+})
+
+// Stop training
+app.post('/api/training/stop/:id', async (c) => {
+  const { DB } = c.env
+  const modelId = c.req.param('id')
+  
+  try {
+    await DB.prepare(`
+      UPDATE fine_tuned_models 
+      SET status = 'cancelled' 
+      WHERE id = ?
+    `).bind(modelId).run()
+    
+    return c.json({ message: 'Training stopped successfully' })
+  } catch (error) {
+    console.error('Error stopping training:', error)
+    return c.json({ error: 'Failed to stop training' }, 500)
+  }
+})
+
+// Training Studio Page
+app.get('/training', (c) => {
+  return c.html(`<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎵 Training Studio - Sonar Maestrum</title>
+    <script>
+        // Redirect to the training page
+        window.location.href = '/training.html';
+    </script>
+</head>
+<body>
+    <p>Redirecting to Training Studio...</p>
+</body>
+</html>`)
 })
 
 // Main page
