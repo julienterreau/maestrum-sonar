@@ -92,6 +92,117 @@ app.get('/api/generations/:id', async (c) => {
   }
 })
 
+// Sonar Maestrum API Routes
+
+// Get all training datasets
+app.get('/api/training/datasets', async (c) => {
+  const { DB } = c.env
+  try {
+    const { results } = await DB.prepare(`
+      SELECT * FROM training_datasets 
+      ORDER BY created_at DESC
+    `).all()
+    return c.json({ datasets: results })
+  } catch (error) {
+    console.error('Error fetching datasets:', error)
+    return c.json({ error: 'Failed to fetch datasets' }, 500)
+  }
+})
+
+// Get all fine-tuned models
+app.get('/api/training/models', async (c) => {
+  const { DB } = c.env
+  try {
+    const { results } = await DB.prepare(`
+      SELECT m.*, d.name as dataset_name 
+      FROM fine_tuned_models m
+      LEFT JOIN training_datasets d ON m.dataset_id = d.id
+      ORDER BY m.created_at DESC
+    `).all()
+    return c.json({ models: results })
+  } catch (error) {
+    console.error('Error fetching models:', error)
+    return c.json({ error: 'Failed to fetch models' }, 500)
+  }
+})
+
+// Get generation presets
+app.get('/api/presets', async (c) => {
+  const { DB } = c.env
+  try {
+    const { results } = await DB.prepare(`
+      SELECT p.*, m.name as model_display_name
+      FROM generation_presets p
+      LEFT JOIN fine_tuned_models m ON p.model_id = m.id
+      ORDER BY is_favorite DESC, use_count DESC
+    `).all()
+    return c.json({ presets: results })
+  } catch (error) {
+    console.error('Error fetching presets:', error)
+    return c.json({ error: 'Failed to fetch presets' }, 500)
+  }
+})
+
+// Get music library
+app.get('/api/library', async (c) => {
+  const { DB } = c.env
+  try {
+    const { results } = await DB.prepare(`
+      SELECT * FROM music_library 
+      ORDER BY created_at DESC 
+      LIMIT 100
+    `).all()
+    return c.json({ music: results })
+  } catch (error) {
+    console.error('Error fetching library:', error)
+    return c.json({ error: 'Failed to fetch library' }, 500)
+  }
+})
+
+// Get playlists
+app.get('/api/playlists', async (c) => {
+  const { DB } = c.env
+  try {
+    const { results } = await DB.prepare(`
+      SELECT * FROM playlists 
+      ORDER BY updated_at DESC
+    `).all()
+    return c.json({ playlists: results })
+  } catch (error) {
+    console.error('Error fetching playlists:', error)
+    return c.json({ error: 'Failed to fetch playlists' }, 500)
+  }
+})
+
+// Get database status (diagnostic endpoint)
+app.get('/api/status', async (c) => {
+  const { DB } = c.env
+  try {
+    const datasets = await DB.prepare(`SELECT COUNT(*) as count FROM training_datasets`).first()
+    const models = await DB.prepare(`SELECT COUNT(*) as count FROM fine_tuned_models`).first()
+    const presets = await DB.prepare(`SELECT COUNT(*) as count FROM generation_presets`).first()
+    const music = await DB.prepare(`SELECT COUNT(*) as count FROM music_library`).first()
+    const playlists = await DB.prepare(`SELECT COUNT(*) as count FROM playlists`).first()
+    const generations = await DB.prepare(`SELECT COUNT(*) as count FROM generations`).first()
+    
+    return c.json({
+      status: 'online',
+      database: 'Sonar Maestrum',
+      tables: {
+        training_datasets: datasets?.count || 0,
+        fine_tuned_models: models?.count || 0,
+        generation_presets: presets?.count || 0,
+        music_library: music?.count || 0,
+        playlists: playlists?.count || 0,
+        generations: generations?.count || 0
+      }
+    })
+  } catch (error) {
+    console.error('Error fetching status:', error)
+    return c.json({ error: 'Failed to fetch status', status: 'error' }, 500)
+  }
+})
+
 // Main page
 app.get('/', (c) => {
   return c.html(`
