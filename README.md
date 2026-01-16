@@ -29,10 +29,19 @@ A beautiful web application for AI-powered music generation using InspireMusic m
   - Auto-refresh every 10 seconds
   - Detailed generation metadata
 
+- **🎵 Sonar Maestrum Training System** (NEW!)
+  - **Training Datasets Management**: Track uploaded audio datasets for model training
+  - **Fine-tuned Models**: Manage custom models trained on user datasets
+  - **Generation Presets**: Save and reuse generation configurations
+  - **Music Library**: Organized collection of generated and uploaded music
+  - **Playlists**: Create and manage music playlists
+  - **Training Logs**: Monitor model training progress in real-time
+
 - **Database Integration**
   - Cloudflare D1 SQLite database
-  - Persistent storage of generation requests
-  - Fast query performance with indexes
+  - 9 comprehensive tables for music training and generation
+  - Persistent storage of generation requests and training data
+  - Fast query performance with optimized indexes
 
 ### 🔮 Coming Soon (Phase 2)
 
@@ -157,6 +166,7 @@ pm2 stop webapp
 ## 🗄️ Database Schema
 
 ### `generations` Table
+Generation requests and results.
 
 ```sql
 CREATE TABLE generations (
@@ -174,9 +184,59 @@ CREATE TABLE generations (
 );
 ```
 
-**Indexes**:
-- `idx_generations_status` on `status`
-- `idx_generations_created_at` on `created_at DESC`
+### 🎵 Sonar Maestrum Tables
+
+#### `training_datasets`
+Audio datasets for model training with metadata.
+
+```sql
+CREATE TABLE training_datasets (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  description TEXT,
+  genre TEXT,
+  total_files INTEGER DEFAULT 0,
+  total_duration INTEGER DEFAULT 0,
+  total_size INTEGER DEFAULT 0,
+  status TEXT DEFAULT 'uploading',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+#### `training_files`
+Individual audio files within datasets.
+
+#### `fine_tuned_models`
+Custom trained models based on user datasets.
+
+```sql
+CREATE TABLE fine_tuned_models (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  base_model TEXT NOT NULL,
+  dataset_id INTEGER NOT NULL,
+  status TEXT DEFAULT 'pending',
+  progress INTEGER DEFAULT 0,
+  epochs_completed INTEGER DEFAULT 0,
+  total_epochs INTEGER,
+  training_loss REAL,
+  validation_loss REAL,
+  ...
+);
+```
+
+#### `training_logs`
+Detailed training progress logs for each model.
+
+#### `generation_presets`
+Saved generation configurations for quick reuse.
+
+#### `music_library`
+User's collection of generated or uploaded music.
+
+#### `playlists` & `playlist_tracks`
+User-created playlists and their associated tracks.
 
 ## 🔧 Configuration
 
@@ -210,8 +270,9 @@ HUGGINGFACE_API_KEY=your_api_key_here
 
 ## 📝 API Endpoints
 
-### POST `/api/generate`
+### Music Generation
 
+#### POST `/api/generate`
 Generate music from text description.
 
 **Request**:
@@ -233,31 +294,79 @@ Generate music from text description.
 }
 ```
 
-### GET `/api/generations`
-
+#### GET `/api/generations`
 Get all generations (last 50).
+
+#### GET `/api/generations/:id`
+Get specific generation by ID.
+
+### 🎵 Sonar Maestrum Training API
+
+#### GET `/api/status`
+Get database status and table counts.
 
 **Response**:
 ```json
 {
-  "generations": [
+  "status": "online",
+  "database": "Sonar Maestrum",
+  "tables": {
+    "training_datasets": 3,
+    "fine_tuned_models": 3,
+    "generation_presets": 3,
+    "music_library": 3,
+    "playlists": 3,
+    "generations": 0
+  }
+}
+```
+
+#### GET `/api/training/datasets`
+Get all training datasets with metadata.
+
+**Response**:
+```json
+{
+  "datasets": [
     {
       "id": 1,
-      "prompt": "Smooth jazz...",
-      "model_name": "InspireMusic-1.5B-Long",
-      "style": "verse",
-      "duration": 30,
-      "status": "pending",
-      "audio_url": null,
-      "created_at": "2026-01-13 23:47:34"
+      "name": "Jazz Collection 2024",
+      "genre": "Jazz",
+      "total_files": 15,
+      "total_duration": 3600,
+      "status": "ready"
     }
   ]
 }
 ```
 
-### GET `/api/generations/:id`
+#### GET `/api/training/models`
+Get all fine-tuned models with training status.
 
-Get specific generation by ID.
+**Response**:
+```json
+{
+  "models": [
+    {
+      "id": 1,
+      "name": "Jazz Master v1",
+      "base_model": "InspireMusic-1.5B",
+      "status": "completed",
+      "progress": 100,
+      "epochs_completed": 50
+    }
+  ]
+}
+```
+
+#### GET `/api/presets`
+Get generation presets ordered by favorites and usage.
+
+#### GET `/api/library`
+Get music library (last 100 tracks).
+
+#### GET `/api/playlists`
+Get all playlists with track counts.
 
 ## 🚢 Deployment
 
@@ -318,6 +427,9 @@ webapp/
 - [x] Beautiful responsive UI
 - [x] Generation history dashboard
 - [x] Local development environment
+- [x] **Sonar Maestrum training database** (NEW!)
+- [x] **Training datasets, models, and presets API** (NEW!)
+- [x] **Music library and playlists structure** (NEW!)
 
 ### Phase 2: External API Integration (🔄 In Progress)
 - [ ] ModelScope API integration
