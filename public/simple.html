@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sonar Maestrum - Simple & Powerful</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background: #0a0a0a;
+            color: #ffffff;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(102, 126, 234, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 16px 40px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.5);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .input-field {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 16px 20px;
+            border-radius: 12px;
+            color: white;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #667eea;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.5);
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.5);
+            border: none;
+        }
+        
+        .tag {
+            display: inline-block;
+            padding: 6px 14px;
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .tag:hover {
+            background: rgba(102, 126, 234, 0.2);
+            border-color: rgba(102, 126, 234, 0.5);
+        }
+        
+        .tag.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: transparent;
+        }
+        
+        .waveform {
+            height: 80px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+        
+        .wave-bar {
+            flex: 1;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+            transition: height 0.1s ease;
+            opacity: 0.6;
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            stroke-dasharray: 283;
+            stroke-dashoffset: 283;
+            transition: stroke-dashoffset 0.5s;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        .simple-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            z-index: 1000;
+        }
+        
+        .content-wrapper {
+            margin-top: 80px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 0 24px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Simple Navigation -->
+    <nav class="simple-nav">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-8">
+                    <h1 class="text-2xl font-bold gradient-text">Sonar Maestrum</h1>
+                    <div class="flex gap-4">
+                        <a href="/" class="text-sm text-gray-400 hover:text-white transition">Generate</a>
+                        <a href="/upload" class="text-sm text-gray-400 hover:text-white transition">Library</a>
+                        <a href="/premium" class="text-sm text-gray-400 hover:text-white transition">Premium</a>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button class="text-sm text-gray-400 hover:text-white transition">
+                        <i class="fas fa-user mr-2"></i>Sign In
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="content-wrapper py-12">
+        <!-- Hero Section -->
+        <div class="text-center mb-16">
+            <h2 class="text-6xl font-bold mb-6">
+                Create music with <span class="gradient-text">AI</span>
+            </h2>
+            <p class="text-xl text-gray-400 max-w-2xl mx-auto">
+                Generate unique music tracks in seconds. Just describe what you want, and let AI create it.
+            </p>
+        </div>
+        
+        <!-- Main Generation Card -->
+        <div class="card rounded-3xl p-10 mb-12 max-w-4xl mx-auto">
+            <form id="generateForm">
+                <!-- Prompt Input -->
+                <div class="mb-8">
+                    <label class="block text-sm font-medium text-gray-300 mb-3">Describe your music</label>
+                    <textarea 
+                        id="promptInput"
+                        class="input-field resize-none"
+                        rows="4"
+                        placeholder="e.g., Upbeat electronic dance music with synth leads and powerful drops"
+                        required
+                    ></textarea>
+                </div>
+                
+                <!-- Quick Tags -->
+                <div class="mb-8">
+                    <label class="block text-sm font-medium text-gray-300 mb-3">Quick styles</label>
+                    <div class="flex flex-wrap gap-2" id="styleTags">
+                        <span class="tag" data-style="chill lofi">Chill Lofi</span>
+                        <span class="tag" data-style="upbeat pop">Upbeat Pop</span>
+                        <span class="tag" data-style="epic orchestral">Epic Orchestral</span>
+                        <span class="tag" data-style="jazz smooth">Jazz Smooth</span>
+                        <span class="tag" data-style="rock energetic">Rock Energy</span>
+                        <span class="tag" data-style="ambient atmospheric">Ambient</span>
+                    </div>
+                </div>
+                
+                <!-- Duration Slider -->
+                <div class="mb-8">
+                    <div class="flex justify-between items-center mb-3">
+                        <label class="text-sm font-medium text-gray-300">Duration</label>
+                        <span class="text-sm text-gray-400"><span id="durationValue">30</span>s</span>
+                    </div>
+                    <input 
+                        type="range" 
+                        id="durationSlider" 
+                        class="slider" 
+                        min="10" 
+                        max="60" 
+                        value="30"
+                    >
+                </div>
+                
+                <!-- Generate Button -->
+                <button type="submit" class="btn-primary w-full text-white text-lg">
+                    <i class="fas fa-magic mr-2"></i>
+                    Generate Music
+                </button>
+            </form>
+        </div>
+        
+        <!-- Recent Generations -->
+        <div class="mb-12">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold">Recent Generations</h3>
+                <button id="refreshBtn" class="btn-secondary text-sm">
+                    <i class="fas fa-sync-alt mr-2"></i>Refresh
+                </button>
+            </div>
+            
+            <div id="generationsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Generation cards will be inserted here -->
+            </div>
+            
+            <div id="loadingState" class="text-center py-16 hidden">
+                <div class="inline-block">
+                    <svg class="progress-ring w-16 h-16" viewBox="0 0 100 100">
+                        <circle class="progress-ring-circle" stroke="rgba(102, 126, 234, 0.3)" stroke-width="4" fill="transparent" r="45" cx="50" cy="50"/>
+                    </svg>
+                </div>
+                <p class="text-gray-400 mt-4">Loading generations...</p>
+            </div>
+            
+            <div id="emptyState" class="card rounded-3xl p-16 text-center hidden">
+                <i class="fas fa-music text-6xl text-gray-700 mb-6"></i>
+                <h4 class="text-xl font-semibold text-gray-400 mb-2">No generations yet</h4>
+                <p class="text-gray-500">Create your first music track above</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Elements
+        const promptInput = document.getElementById('promptInput');
+        const durationSlider = document.getElementById('durationSlider');
+        const durationValue = document.getElementById('durationValue');
+        const generateForm = document.getElementById('generateForm');
+        const generationsList = document.getElementById('generationsList');
+        const loadingState = document.getElementById('loadingState');
+        const emptyState = document.getElementById('emptyState');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const styleTags = document.querySelectorAll('.tag');
+        
+        // Duration slider
+        durationSlider.addEventListener('input', (e) => {
+            durationValue.textContent = e.target.value;
+        });
+        
+        // Style tags
+        styleTags.forEach(tag => {
+            tag.addEventListener('click', () => {
+                const style = tag.dataset.style;
+                const currentText = promptInput.value.trim();
+                
+                if (currentText && !currentText.toLowerCase().includes(style.toLowerCase())) {
+                    promptInput.value = currentText + ' ' + style;
+                } else if (!currentText) {
+                    promptInput.value = style;
+                }
+                
+                tag.classList.toggle('active');
+            });
+        });
+        
+        // Generate form
+        generateForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const prompt = promptInput.value.trim();
+            const duration = parseInt(durationSlider.value);
+            
+            if (!prompt) return;
+            
+            showNotification('🎵 Generating...', 'Your music is being created');
+            
+            try {
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        prompt,
+                        duration,
+                        model_name: 'InspireMusic-1.5B-Long',
+                        style: 'verse'
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    showNotification('✅ Success', `Generation #${data.id} created`);
+                    
+                    // Clear form
+                    promptInput.value = '';
+                    durationSlider.value = 30;
+                    durationValue.textContent = '30';
+                    styleTags.forEach(tag => tag.classList.remove('active'));
+                    
+                    // Reload generations
+                    setTimeout(() => loadGenerations(), 1000);
+                } else {
+                    showNotification('❌ Error', 'Failed to generate music');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('❌ Error', 'Failed to generate music');
+            }
+        });
+        
+        // Load generations
+        async function loadGenerations() {
+            loadingState.classList.remove('hidden');
+            generationsList.innerHTML = '';
+            emptyState.classList.add('hidden');
+            
+            try {
+                const response = await fetch('/api/generations');
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    loadingState.classList.add('hidden');
+                    
+                    if (data.generations && data.generations.length > 0) {
+                        renderGenerations(data.generations);
+                    } else {
+                        emptyState.classList.remove('hidden');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading generations:', error);
+                loadingState.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+            }
+        }
+        
+        // Render generations
+        function renderGenerations(generations) {
+            generationsList.innerHTML = generations.slice(0, 12).map(gen => `
+                <div class="card rounded-2xl p-6">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-white mb-2 line-clamp-2">${gen.prompt}</h4>
+                            <div class="flex items-center gap-2 text-sm text-gray-400">
+                                <span><i class="fas fa-clock mr-1"></i>${gen.duration}s</span>
+                                <span>•</span>
+                                <span>${getStatusBadge(gen.status)}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${gen.audio_url ? `
+                        <div class="waveform mb-4">
+                            ${generateSimpleWave()}
+                        </div>
+                        <audio controls class="w-full" src="${gen.audio_url}" style="height: 40px;"></audio>
+                    ` : `
+                        <div class="py-8 text-center">
+                            <div class="pulse inline-block">
+                                <i class="fas fa-circle-notch fa-spin text-3xl" style="color: #667eea;"></i>
+                            </div>
+                            <p class="text-sm text-gray-400 mt-3">Generating...</p>
+                        </div>
+                    `}
+                    
+                    <div class="flex gap-2 mt-4">
+                        ${gen.audio_url ? `
+                            <button class="btn-secondary text-sm flex-1" onclick="downloadAudio('${gen.audio_url}', '${gen.id}')">
+                                <i class="fas fa-download mr-2"></i>Download
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Generate simple wave visualization
+        function generateSimpleWave() {
+            let html = '';
+            for (let i = 0; i < 40; i++) {
+                const height = Math.random() * 60 + 20;
+                html += `<div class="wave-bar" style="height: ${height}%;"></div>`;
+            }
+            return html;
+        }
+        
+        // Get status badge
+        function getStatusBadge(status) {
+            const badges = {
+                pending: '<span class="text-yellow-500">⏳ Pending</span>',
+                processing: '<span class="text-blue-500">🔄 Processing</span>',
+                completed: '<span class="text-green-500">✅ Ready</span>',
+                failed: '<span class="text-red-500">❌ Failed</span>'
+            };
+            return badges[status] || status;
+        }
+        
+        // Download audio
+        window.downloadAudio = function(url, id) {
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `sonar-maestrum-${id}.mp3`;
+            a.click();
+            showNotification('📥 Download', 'Starting download...');
+        };
+        
+        // Notification system
+        function showNotification(title, message) {
+            const notif = document.createElement('div');
+            notif.className = 'fixed top-24 right-6 p-5 rounded-2xl shadow-2xl z-50';
+            notif.style.background = 'rgba(10, 10, 10, 0.95)';
+            notif.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+            notif.style.backdropFilter = 'blur(20px)';
+            notif.style.maxWidth = '350px';
+            notif.style.animation = 'slideIn 0.3s ease';
+            notif.innerHTML = `
+                <h4 class="font-semibold text-white mb-1">${title}</h4>
+                <p class="text-sm text-gray-400">${message}</p>
+            `;
+            document.body.appendChild(notif);
+            
+            setTimeout(() => {
+                notif.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notif.remove(), 300);
+            }, 3000);
+        }
+        
+        // Refresh button
+        refreshBtn.addEventListener('click', loadGenerations);
+        
+        // Initial load
+        loadGenerations();
+        
+        // Auto-refresh every 10 seconds
+        setInterval(loadGenerations, 10000);
+    </script>
+    
+    <style>
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+        
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        audio {
+            filter: invert(1) hue-rotate(180deg);
+            opacity: 0.8;
+        }
+        
+        audio::-webkit-media-controls-panel {
+            background: transparent;
+        }
+    </style>
+</body>
+</html>
