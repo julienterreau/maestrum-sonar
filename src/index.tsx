@@ -355,6 +355,143 @@ app.post('/api/training/stop/:id', async (c) => {
   }
 })
 
+// Music Library API - Get all uploaded music
+app.get('/api/library', async (c) => {
+  const { DB } = c.env
+  
+  try {
+    const result = await DB.prepare(`
+      SELECT * FROM music_library 
+      ORDER BY created_at DESC
+    `).all()
+    
+    return c.json({ 
+      music: result.results || [],
+      count: result.results?.length || 0
+    })
+  } catch (error) {
+    console.error('Error fetching library:', error)
+    return c.json({ error: 'Failed to fetch library' }, 500)
+  }
+})
+
+// Upload music file to R2 and add to library
+app.post('/api/library/upload', async (c) => {
+  const { DB, R2 } = c.env
+  
+  try {
+    const formData = await c.req.formData()
+    const file = formData.get('file') as File
+    const genre = formData.get('genre') as string || 'autre'
+    const title = formData.get('title') as string || file.name
+    
+    if (!file) {
+      return c.json({ error: 'No file provided' }, 400)
+    }
+    
+    // Generate unique filename
+    const timestamp = Date.now()
+    const filename = `music/${timestamp}-${file.name}`
+    
+    // Upload to R2 (Cloudflare Object Storage)
+    if (R2) {
+      await R2.put(filename, await file.arrayBuffer(), {
+        httpMetadata: {
+          contentType: file.type
+        }
+      })
+    }
+    
+    // Add to database
+    const result = await DB.prepare(`
+      INSERT INTO music_library (title, artist, genre, duration, file_url, file_size)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).bind(
+      title,
+      'User Upload',
+      genre,
+      0, // Duration will be updated by frontend
+      filename,
+      file.size
+    ).run()
+    
+    return c.json({
+      id: result.meta.last_row_id,
+      filename,
+      message: 'File uploaded successfully'
+    })
+  } catch (error) {
+    console.error('Error uploading music:', error)
+    return c.json({ error: 'Failed to upload music' }, 500)
+  }
+})
+
+// Delete music from library
+app.delete('/api/library/:id', async (c) => {
+  const { DB, R2 } = c.env
+  const id = c.req.param('id')
+  
+  try {
+    // Get file URL first
+    const music = await DB.prepare(`
+      SELECT file_url FROM music_library WHERE id = ?
+    `).bind(id).first()
+    
+    if (!music) {
+      return c.json({ error: 'Music not found' }, 404)
+    }
+    
+    // Delete from R2
+    if (R2 && music.file_url) {
+      await R2.delete(music.file_url)
+    }
+    
+    // Delete from database
+    await DB.prepare(`
+      DELETE FROM music_library WHERE id = ?
+    `).bind(id).run()
+    
+    return c.json({ message: 'Music deleted successfully' })
+  } catch (error) {
+    console.error('Error deleting music:', error)
+    return c.json({ error: 'Failed to delete music' }, 500)
+  }
+})
+
+// Get music file from R2
+app.get('/api/library/file/:filename', async (c) => {
+  const { R2 } = c.env
+  const filename = c.req.param('filename')
+  
+  try {
+    if (!R2) {
+      return c.notFound()
+    }
+    
+    const object = await R2.get(filename)
+    
+    if (!object) {
+      return c.notFound()
+    }
+    
+    return new Response(object.body, {
+      headers: {
+        'Content-Type': object.httpMetadata?.contentType || 'audio/mpeg',
+        'Content-Length': object.size.toString(),
+        'Cache-Control': 'public, max-age=31536000'
+      }
+    })
+  } catch (error) {
+    console.error('Error fetching file:', error)
+    return c.notFound()
+  }
+})
+
+// Upload Music Page
+app.get('/upload', (c) => {
+  return c.redirect('/upload-music.html')
+})
+
 // Training Studio Page
 app.get('/training', (c) => {
   return c.html(`<!DOCTYPE html>
@@ -413,7 +550,16 @@ app.get('/', (c) => {
             <!-- Header -->
             <div class="text-center mb-12">
                 <div class="flex justify-between items-center mb-4">
-                    <div></div>
+                    <div class="flex gap-3">
+                        <a href="/upload" class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-5 py-3 rounded-xl font-bold hover:scale-105 transition-transform shadow-lg">
+                            <i class="fas fa-upload mr-2"></i>
+                            UPLOAD
+                        </a>
+                        <a href="/training" class="bg-gradient-to-r from-green-500 to-teal-600 text-white px-5 py-3 rounded-xl font-bold hover:scale-105 transition-transform shadow-lg">
+                            <i class="fas fa-brain mr-2"></i>
+                            TRAIN
+                        </a>
+                    </div>
                     <h1 class="text-5xl font-bold text-white">
                         <i class="fas fa-music mr-3"></i>
                         InspireMusic Generator
